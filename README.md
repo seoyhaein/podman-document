@@ -49,7 +49,7 @@ podman run -v /opt:/opt -it --name centPrint01 centos /bin/sh
 예를 들어서 컨테이너 생성후 컨테이너가 존재할 경우는 podman start (컨테이너 ID or 컨테이너 Name) 은 binding api start 와 동일하다.
 
 ### SpecGenerator
-### type ContainerStorageConfig struct
+### ContainerStorageConfig 
 - Image string 컨테이너로 사용할 이미지 
 - Rootfs string rootfs는 루트 파일 시스템을 뜻하며, 리눅스 파일 시스템을 미리 패키지화 해놓은 바이너리.
 - Image 와 Rootfs 둘중하나는 설정되어 있어야 한다.(당연한 소리)
@@ -166,6 +166,13 @@ named volum은 Docker(Linux에서는 /var/lib/docker/volume/)가 관리하는 Ho
 	Volatile bool `json:"volatile,omitempty"`
 
 ```
+
+### ContainerBasicConfig
+### ContainerSecurityConfig
+### ContainerCgroupConfig
+### ContainerNetworkConfig
+### ContainerResourceConfig
+### ContainerHealthCheckConfig
 
 
 
