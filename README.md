@@ -168,11 +168,239 @@ named volum은 Docker(Linux에서는 /var/lib/docker/volume/)가 관리하는 Ho
 ```
 
 ### ContainerBasicConfig
+- Name string 컨테이너 이름, 세팅 안되면 랜덤하게 세팅됨.
+- Pod string Pod is the ID of the pod the container will join. [참고1](https://url.kr/nvfhsi) [참고2](https://url.kr/dfaq6m)
+- Entrypoint []string // Entrypoint is the container's entrypoint. If not given and Image is specified, this will be populated by the image's configuration.
+- Command []string // Command is the container's command. If not given and Image is specified, this will be populated by the image's configuration.
+- EnvHost bool 호스트의 env (환경)이 컨테이너에 추가될지 결정.
+- HTTPProxy bool // EnvHTTPProxy indicates that the http host proxy environment variables should be added to container.
+- Env map[string]string // Env is a set of environment variables that will be set in the container.
+- Terminal bool // Terminal is whether the container will create a PTY. PTY 는 원격접속을 의미한다. [참고3, TTY, PTY, PTS](https://url.kr/o9viub)
+- Stdin bool // Stdin is whether the container will keep its STDIN open. 옵션 값인데, default 값이 무엇인지, 그리고 stdin 이 컨테이너에서 open 이 되면 어떤지 테스트 할것.
+- Labels map[string]string //Labels are key-value pairs that are used to add metadata to containers.
+- Annotations map[string]string // Annotations are key-value options passed into the container runtime that can be used to trigger special behavior. 예시 찾아보자.
+- StopSignal *syscall.Signal // StopSignal is the signal that will be used to stop the container. Must be a non-zero integer below SIGRTMAX. If not provided, the default, SIGTERM, will be used. Will conflict with Systemd if Systemd is set to "true" or "always".
+- [참고4, syscall.Signal,SIGRTMAX,SIGTERM](https://en.wikipedia.org/wiki/Signal_(IPC))
+- StopTimeout *uint // StopTimeout is a timeout between the container's stop signal being sent and SIGKILL being sent. If not provided, the default will be used. If 0 is used, stop signal will not be sent, and SIGKILL will be sent instead.
+- Timeout uint //// Timeout is a maximum time in seconds the container will run before main process is sent SIGKILL. If 0 is used, signal will not be sent. Container can run indefinitely
+- LogConfiguration *LogConfig // LogConfiguration describes the logging for a container including driver, path, and options. 이건 테스트 해보야 할듯. 관련 예시 찾자.
+- ConmonPidFile string  // ConmonPidFile is a path at which a PID file for Conmon will be placed. If not given, a default location will be used.
+- [참고5, Conmon, An OCI container runtime monitor.](https://github.com/containers/conmon) 살펴보자.
+- RawImageName string // RawImageName is the user-specified and unprocessed input referring to a local or a remote image. 살펴보자. 자료조사 필요
+- RestartPolicy string // RestartRetries is the number of attempts that will be made to restart the container. Only available when RestartPolicy is set to "on-failure".
+- [참고6, podman restart policy](https://asciinema.org/a/240306)
+- [참고7, docker restart policy](https://url.kr/ic7s2v)
+- RestartRetries *uint // RestartRetries is the number of attempts that will be made to restart the container. Only available when RestartPolicy is set to "on-failure".
+- OCIRuntime string // OCIRuntime is the name of the OCI runtime that will be used to create the container. If not specified, the default will be used.
+- Systemd string 	// Systemd is whether the container will be started in systemd mode. Valid options are "true", "false", and "always". "true" enables this mode only if the binary run in the container is /sbin/init or systemd. "always" unconditionally enables systemd mode.
+- "false" unconditionally disables systemd mode. If enabled, mounts and stop signal will be modified. If set to "always" or set to "true" and conditionally triggered, conflicts with StopSignal. If not specified, "false" will be assumed.
+
+- 나머지는 코드로 대체함.
+```
+// Determine how to handle the NOTIFY_SOCKET - do we participate or pass it through
+	// "container" - let the OCI runtime deal with it, advertise conmon's MAINPID
+	// "conmon-only" - advertise conmon's MAINPID, send READY when started, don't pass to OCI
+	// "ignore" - unset NOTIFY_SOCKET
+	SdNotifyMode string `json:"sdnotifyMode,omitempty"`
+	// Namespace is the libpod namespace the container will be placed in.
+	// Optional.
+	Namespace string `json:"namespace,omitempty"`
+	// PidNS is the container's PID namespace.
+	// It defaults to private.
+	// Mandatory.
+	PidNS Namespace `json:"pidns,omitempty"`
+	// UtsNS is the container's UTS namespace.
+	// It defaults to private.
+	// Must be set to Private to set Hostname.
+	// Mandatory.
+	UtsNS Namespace `json:"utsns,omitempty"`
+	// Hostname is the container's hostname. If not set, the hostname will
+	// not be modified (if UtsNS is not private) or will be set to the
+	// container ID (if UtsNS is private).
+	// Conflicts with UtsNS if UtsNS is not set to private.
+	// Optional.
+	Hostname string `json:"hostname,omitempty"`
+	// Sysctl sets kernel parameters for the container
+	Sysctl map[string]string `json:"sysctl,omitempty"`
+	// Remove indicates if the container should be removed once it has been started
+	// and exits
+	Remove bool `json:"remove,omitempty"`
+	// ContainerCreateCommand is the command that was used to create this
+	// container.
+	// This will be shown in the output of Inspect() on the container, and
+	// may also be used by some tools that wish to recreate the container
+	// (e.g. `podman generate systemd --new`).
+	// Optional.
+	ContainerCreateCommand []string `json:"containerCreateCommand,omitempty"`
+	// PreserveFDs is a number of additional file descriptors (in addition
+	// to 0, 1, 2) that will be passed to the executed process. The total FDs
+	// passed will be 3 + PreserveFDs.
+	// set tags as `json:"-"` for not supported remote
+	// Optional.
+	PreserveFDs uint `json:"-"`
+	// Timezone is the timezone inside the container.
+	// Local means it has the same timezone as the host machine
+	// Optional.
+	Timezone string `json:"timezone,omitempty"`
+	// DependencyContainers is an array of containers this container
+	// depends on. Dependency containers must be started before this
+	// container. Dependencies can be specified by name or full/partial ID.
+	// Optional.
+	DependencyContainers []string `json:"dependencyContainers,omitempty"`
+	// PidFile is the file that saves container process id.
+	// set tags as `json:"-"` for not supported remote
+	// Optional.
+	PidFile string `json:"-"`
+	// EnvSecrets are secrets that will be set as environment variables
+	// Optional.
+	EnvSecrets map[string]string `json:"secret_env,omitempty"`
+	// InitContainerType describes if this container is an init container
+	// and if so, what type: always or once
+	InitContainerType string `json:"init_container_type"`
+	// Personality allows users to configure different execution domains.
+	// Execution domains tell Linux how to map signal numbers into signal actions.
+	// The execution domain system allows Linux to provide limited support
+	// for binaries compiled under other UNIX-like operating systems.
+	Personality *spec.LinuxPersonality `json:"personality,omitempty"`
+
+```
+
 ### ContainerSecurityConfig
+- 몇번 이슈된적이 있는데 중요도는 낮으나, 잘 사용할려면 살펴두자.
+```
+// ContainerSecurityConfig is a container's security features, including
+// SELinux, Apparmor, and Seccomp.
+type ContainerSecurityConfig struct {
+	// Privileged is whether the container is privileged.
+	// Privileged does the following:
+	// - Adds all devices on the system to the container.
+	// - Adds all capabilities to the container.
+	// - Disables Seccomp, SELinux, and Apparmor confinement.
+	//   (Though SELinux can be manually re-enabled).
+	// TODO: this conflicts with things.
+	// TODO: this does more.
+	Privileged bool `json:"privileged,omitempty"`
+	// User is the user the container will be run as.
+	// Can be given as a UID or a username; if a username, it will be
+	// resolved within the container, using the container's /etc/passwd.
+	// If unset, the container will be run as root.
+	// Optional.
+	User string `json:"user,omitempty"`
+	// Groups are a list of supplemental groups the container's user will
+	// be granted access to.
+	// Optional.
+	Groups []string `json:"groups,omitempty"`
+	// CapAdd are capabilities which will be added to the container.
+	// Conflicts with Privileged.
+	// Optional.
+	CapAdd []string `json:"cap_add,omitempty"`
+	// CapDrop are capabilities which will be removed from the container.
+	// Conflicts with Privileged.
+	// Optional.
+	CapDrop []string `json:"cap_drop,omitempty"`
+	// SelinuxProcessLabel is the process label the container will use.
+	// If SELinux is enabled and this is not specified, a label will be
+	// automatically generated if not specified.
+	// Optional.
+	SelinuxOpts []string `json:"selinux_opts,omitempty"`
+	// ApparmorProfile is the name of the Apparmor profile the container
+	// will use.
+	// Optional.
+	ApparmorProfile string `json:"apparmor_profile,omitempty"`
+	// SeccompPolicy determines which seccomp profile gets applied
+	// the container. valid values: empty,default,image
+	SeccompPolicy string `json:"seccomp_policy,omitempty"`
+	// SeccompProfilePath is the path to a JSON file containing the
+	// container's Seccomp profile.
+	// If not specified, no Seccomp profile will be used.
+	// Optional.
+	SeccompProfilePath string `json:"seccomp_profile_path,omitempty"`
+	// NoNewPrivileges is whether the container will set the no new
+	// privileges flag on create, which disables gaining additional
+	// privileges (e.g. via setuid) in the container.
+	NoNewPrivileges bool `json:"no_new_privileges,omitempty"`
+	// UserNS is the container's user namespace.
+	// It defaults to host, indicating that no user namespace will be
+	// created.
+	// If set to private, IDMappings must be set.
+	// Mandatory.
+	UserNS Namespace `json:"userns,omitempty"`
+	// IDMappings are UID and GID mappings that will be used by user
+	// namespaces.
+	// Required if UserNS is private.
+	IDMappings *types.IDMappingOptions `json:"idmappings,omitempty"`
+	// ReadOnlyFilesystem indicates that everything will be mounted
+	// as read-only
+	ReadOnlyFilesystem bool `json:"read_only_filesystem,omitempty"`
+	// Umask is the umask the init process of the container will be run with.
+	Umask string `json:"umask,omitempty"`
+	// ProcOpts are the options used for the proc mount.
+	ProcOpts []string `json:"procfs_opts,omitempty"`
+	// Mask is the path we want to mask in the container. This masks the paths
+	// given in addition to the default list.
+	// Optional
+	Mask []string `json:"mask,omitempty"`
+	// Unmask is the path we want to unmask in the container. To override
+	// all the default paths that are masked, set unmask=ALL.
+	Unmask []string `json:"unmask,omitempty"`
+}
+```
 ### ContainerCgroupConfig
+- 일단 생략
+
 ### ContainerNetworkConfig
+- 일단 생략
+
 ### ContainerResourceConfig
+- 아래 코드로 대신하는데, 일단 컨테이너 잡을 구성할때 Resource 에 대한 제한을 둬야 하기 때문에 실제로 잘 살펴봐야 한다.
+
+```
+// ContainerResourceConfig contains information on container resource limits.
+type ContainerResourceConfig struct {
+	// ResourceLimits are resource limits to apply to the container.,
+	// Can only be set as root on cgroups v1 systems, but can be set as
+	// rootless as well for cgroups v2.
+	// Optional.
+	ResourceLimits *spec.LinuxResources `json:"resource_limits,omitempty"`
+	// Rlimits are POSIX rlimits to apply to the container.
+	// Optional.
+	Rlimits []spec.POSIXRlimit `json:"r_limits,omitempty"`
+	// OOMScoreAdj adjusts the score used by the OOM killer to determine
+	// processes to kill for the container's process.
+	// Optional.
+	OOMScoreAdj *int `json:"oom_score_adj,omitempty"`
+	// Weight per cgroup per device, can override BlkioWeight
+	WeightDevice map[string]spec.LinuxWeightDevice `json:"weightDevice,omitempty"`
+	// IO read rate limit per cgroup per device, bytes per second
+	ThrottleReadBpsDevice map[string]spec.LinuxThrottleDevice `json:"throttleReadBpsDevice,omitempty"`
+	// IO write rate limit per cgroup per device, bytes per second
+	ThrottleWriteBpsDevice map[string]spec.LinuxThrottleDevice `json:"throttleWriteBpsDevice,omitempty"`
+	// IO read rate limit per cgroup per device, IO per second
+	ThrottleReadIOPSDevice map[string]spec.LinuxThrottleDevice `json:"throttleReadIOPSDevice,omitempty"`
+	// IO write rate limit per cgroup per device, IO per second
+	ThrottleWriteIOPSDevice map[string]spec.LinuxThrottleDevice `json:"throttleWriteIOPSDevice,omitempty"`
+	// CgroupConf are key-value options passed into the container runtime
+	// that are used to configure cgroup v2.
+	// Optional.
+	CgroupConf map[string]string `json:"unified,omitempty"`
+	// CPU period of the cpuset, determined by --cpus
+	CPUPeriod uint64 `json:"cpu_period,omitempty"`
+	// CPU quota of the cpuset, determined by --cpus
+	CPUQuota int64 `json:"cpu_quota,omitempty"`
+}
+```
 ### ContainerHealthCheckConfig
+- 관련 예시를 찾아보자.
+
+```
+// ContainerHealthCheckConfig describes a container healthcheck with attributes
+// like command, retries, interval, start period, and timeout.
+type ContainerHealthCheckConfig struct {
+	HealthConfig *manifest.Schema2HealthConfig `json:"healthconfig,omitempty"`
+}
+```
+
+### types, uitls 는 tent 에서 가져왔다 refactoring 예정.
 
 
 

@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/containers/podman/v3/pkg/specgen"
 	"os"
 
 	"github.com/containers/podman/v3/pkg/bindings"
 	"github.com/containers/podman/v3/pkg/bindings/containers"
+	"github.com/containers/podman/v3/pkg/bindings/images"
+	"github.com/containers/podman/v3/pkg/specgen"
 )
 
 func main() {
@@ -34,6 +35,13 @@ func main() {
 	s := specgen.NewSpecGenerator(centos, false)
 	s.Terminal = true
 	r, err := containers.CreateWithSpec(ctx, s, &containers.CreateOptions{})
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	// Pull Busybox image (Sample 1)
+	fmt.Println("Pulling Busybox image...")
+	_, err = images.Pull(ctx, "docker.io/busybox", &images.PullOptions{})
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
