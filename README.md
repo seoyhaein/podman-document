@@ -23,23 +23,135 @@ docker 에 비해서 여러가지 장점들이 있다.
 ### Volume mount & Bind mount
 -[참고](https://www.daleseo.com/docker-volumes-bind-mounts/)
 
-### TODO
-- 4.x 와 3.x 코드 비교해서 4.x 코드 중심으로 bindins 관련 학습한다. 소스가 업데이트 됨으로 향후 4.x 가 apt install podman  으로 4.x 도 설치 가능하리라 예상.
-
 ### podman 기본사용법 (Docker 랑 사용법이 거의 동일 하다.)
+
+- 기본 사용법
 
 ```
 // podman 이미지 가져오기
 podman pull centos
+
+// 이미지 리스트 확인 
+// podman image list 와 동일
+podman images
+
+
 // 이미지 run 시키기(컨테이너 실행시키기)
 podman run -it --name cent centos /bin/sh
 
 // container 가 실행중이고 /bin/bash 또는 /bin/sh 등의 bash 등이 실행되어 있다면 docker 와 같이 attach 로 접근할 수 있다.
 podman attach cent
 
-// volume mount 시키기
+// bind mount 시키기
 podman run -v /opt:/opt -it --name centPrint01 centos /bin/sh
+
 ```
+
+- 모든 컨테이너 삭제
+
+```
+
+// 여기서 -q 옵션은 컨테이너 아이디를 한줄씩 출력해준다.
+// 모든 컨테이너를 중지시킨다.
+podman stop $(podman ps -a -q) 또는  podman stop $(podman ps -aq)
+
+// 모두 중지된 컨테이너를 삭제한다.
+podman rm $(podman ps -a -q)
+
+// 위의 두과정을 거치지 않고 -f 을 주면 ㅎ강제로 중지시키고 삭제가 가능하다.
+podman rm -f $(podman ps -a -q)
+
+// 중지된 컨테이너만 삭제한다. (테스트 해보자.)
+podman container prune
+
+```
+#### podman pull 또는 이미지를 가져올때 아래와 같은 문제가 발생할때
+- 아래코드는 mariadb 이미지를 가져올때 발생했다.
+- 이에 대한 해결책은 docker.io 를 붙이면 된다. [참고](https://url.kr/cgvhkx)
+
+```
+podman pull mariadb
+> short-name "mariadb" did not resolve to an alias and no unqualified-search registries are defined in "/etc/containers/registries.conf"
+
+podman pull docker.io/mariadb
+```
+
+#### podman run Detached mode
+Detached mode: run the container in the background and print the new container ID. The default is false.
+
+At any time you can run podman ps in the other shell to view a list of the running containers.
+
+You can reattach to a detached container with podman attach.
+
+- podman run --dt or podman run -d
+
+### Pod 관련 (mesos container 관련해서도 한번 정리하자. https://mesos.apache.org/documentation/latest/)
+
+- pod 에 있는 컨테이너나 pod 는 podman 에서 삭제할 수 없다. 즉, podman rm -f 컨테이너ID 로 삭제할 수 없다.
+
+모든 Podman 포드에는 인프라 컨테이너가 포함되어 있습니다. 이 컨테이너는 아무 작업도 수행하지 않지만 잠자기 상태로 전환됩니다. 그 목적은 포드와 연결된 네임스페이스를 보유하고 포드맨이 다른 컨테이너를 포드에 연결할 수 있도록 하는 것입니다. 이를 통해 POD 내에서 컨테이너를 시작 및 중지할 수 있으며 포드는 계속 실행됩니다. 기본 컨테이너가 포드를 제어하는 ​​것처럼 이는 불가능합니다. 기본 인프라 컨테이너는 k8s.gcr.io/pause이미지를 기반으로 합니다 . 달리 명시하지 않는 한 모든 포드에는 기본 이미지 기반 컨테이너가 있습니다.
+
+Pod를 구성하는 대부분의 속성은 실제로 infra 컨테이너에 할당됩니다. 포트 바인딩, cgroup-parent 값 및 커널 네임스페이스는 모두 infra 컨테이너에 할당됩니다. 포드가 생성되면 이러한 속성이 인프라 컨테이너에 할당되고 변경할 수 없기 때문에 이를 이해하는 것이 중요합니다. 예를 들어 포드를 생성한 다음 나중에 새 포트를 바인딩하는 컨테이너를 추가하기로 결정하면 포드맨은 이를 수행할 수 없습니다. 새 컨테이너를 추가하기 전에 추가 포트 바인딩으로 포드를 다시 생성해야 합니다.
+
+위의 다이어그램에서 각 컨테이너 위에 있는 상자를 확인하십시오. 이것은 컨테이너 모니터(conmon)입니다. 작은 C 프로그램이 하는 일은 컨테이너의 기본 프로세스를 감시하고 컨테이너가 죽으면 종료 코드를 저장하는 것입니다. 또한 나중에 첨부할 수 있도록 컨테이너의 tty를 열어둡니다. 이것은 podman이 분리 모드(백그라운드)에서 실행되도록 하여 podman은 종료할 수 있지만 conmon은 계속 실행됩니다. 각 컨테이너에는 고유한 conmon 인스턴스가 있습니다.
+
+[podman pod create](https://docs.podman.io/en/latest/markdown/podman-pod-create.1.html)
+
+- podman pod create --name test
+- podman pod ls (pod 컨테이너 리스트)
+
+[podman pod rm](https://docs.podman.io/en/latest/markdown/podman-pod-rm.1.html)
+
+- podman pod rm test
+- podman pod rm -fa (강제로(f) 모든(a) 컨테이너를 삭제) 
+
+
+
+#### podman pod 에 컨테이너 넣는 두가지 방법 [참고](https://url.kr/fygb8s)
+- 첫번째 방법
+
+```
+// 먼저 pod 를 test 라는 이름으로 생성한다.
+podman pod create --name test 
+
+//생성된 pod 를 확인 한다.
+// ps, ls, list 는 동일하다.
+podman ls
+
+// --pod 옵션을 붙이면 pod 의 infra 컨테이너들도 나온다.
+
+// 모든 컨테이너와 pod infra 컨테이너
+podman ps -a --pod
+
+// pod 컨테이너 만 나타난다.
+podman ps --pod
+
+// 이제 새로운 컨테이너늘 만들고 이것을 pod 에 연결 시킨다.
+// detach mode 로 최신 alpine 컨테이너를 실행시키고 top 명령어를 실행시켰다. --pod 옵션으로 test 라는 이름의 pod 에 연결 시켰다.
+podman run -dt --pod test docker.io/library/alpine:latest top
+
+```
+- 두번째 방법
+- 아래 코드에서 --pod new:myapp_pod 를 보면 새로운 pod 를 myapp_pod 라고 지어주었다.
+- The use of new: indicates to Podman that we want to create a new pod rather than attempt to assign the container to an existing pod.
+```
+podman run -d --restart=always --pod new:myapp_pod \
+-e MYSQL_ROOT_PASSWORD="myrootpass"  \
+-e MYSQL_DATABASE="wp-db"  \
+-e MYSQL_USER="wp-user"  \
+-e MYSQL_PASSWORD="w0rdpr3ss"  \
+--name=wptest-db docker.io/mariadb
+
+```
+
+#### pod 관련 api 힌트 - 찾기 중
+1. https://github.com/containers/podman/blob/d3903a85910979d8212028cf814574047015db58/libpod/runtime_pod.go
+2. "github.com/containers/podman/v4/pkg/bindings/pods"
+3. https://github.com/containers/podman/search?q=NewPod
+4. github.com/containers/podman/v4/libpod -> libpod.Runtime.NewPod
+5. https://github.com/containers/podman/blob/c3d871a3f6cc7a94c5e86782ba63e05cd1d2faeb/pkg/specgen/generate/pod_create.go
+
+#### pod 에서 volume mount 하는 방법 생각해보자.
 
 ## podman binding api 정리
 먼저,  specgen.NewSpecGenerator 함수를 통해서 SpecGenerator 정해준다. 이 SpecGenerator 에 저장된 정보를 통해서 컨테이너를 생성해준다. 
@@ -400,7 +512,11 @@ type ContainerHealthCheckConfig struct {
 }
 ```
 
-### types, uitls 는 tent 에서 가져왔다 refactoring 예정.
+### Todo
+- 전체적인 싱글머신에서 동작하는 컨테이너 그림 그리기. 병행해서 작업하면서, api 로 뽑아내자.
+- 4.x 와 3.x 코드 비교해서 4.x 코드 중심으로 bindins 관련 학습한다. 소스가 업데이트 됨으로 향후 4.x 가 apt install podman  으로 4.x 도 설치 가능하리라 예상.
+- types, uitls 는 tent 에서 가져왔다 refactoring 예정.
+- pod 관련, volume mount 관련 
 
 
 
