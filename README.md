@@ -86,6 +86,13 @@ You can reattach to a detached container with podman attach.
 - podman run --dt or podman run -d
 
 ### Pod 관련 (mesos container 관련해서도 한번 정리하자. https://mesos.apache.org/documentation/latest/)
+- 쿠버네티스의 pod 참고, podman 의 pod 와 비슷함으로 [참고](https://kubernetes.io/ko/docs/concepts/workloads/pods/)
+- https://developers.redhat.com/blog/2019/01/29/podman-kubernetes-yaml#enough_teasing__show_me_the_goods 읽고 지우기.
+
+The podman generate kube command allows you to export your existing containers into Kubernetes Pod YAML. This YAML can then be imported into OpenShift or a Kubernetes cluster. The podman play kube does the opposite, it allows you to take a Kubernetes YAML and run it in Podman.
+
+[여기서 가져옴-podman.io](https://podman.io/) 결룩 쿠버네틱스 pod 는 podman 의 pod 라는 의미 인거 같다. 좀더 살펴보자.
+
 
 - pod 에 있는 컨테이너나 pod 는 podman 에서 삭제할 수 없다. 즉, podman rm -f 컨테이너ID 로 삭제할 수 없다.
 
@@ -516,7 +523,11 @@ type ContainerHealthCheckConfig struct {
 - 전체적인 싱글머신에서 동작하는 컨테이너 그림 그리기. 병행해서 작업하면서, api 로 뽑아내자.
 - 4.x 와 3.x 코드 비교해서 4.x 코드 중심으로 bindins 관련 학습한다. 소스가 업데이트 됨으로 향후 4.x 가 apt install podman  으로 4.x 도 설치 가능하리라 예상.
 - types, uitls 는 tent 에서 가져왔다 refactoring 예정.
-- pod 관련, volume mount 관련 
+- pod 관련, volume mount 관련
+
+#### 테스트 컨테이너 시나리오
+일단 먼저, 컨테이너들을 수동을 생성한다.
+
 
 
 
