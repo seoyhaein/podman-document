@@ -42,6 +42,9 @@ podman run -it --name cent centos /bin/sh
 // container 가 실행중이고 /bin/bash 또는 /bin/sh 등의 bash 등이 실행되어 있다면 docker 와 같이 attach 로 접근할 수 있다.
 podman attach cent
 
+// 그렇지 않을 경우
+podman exec -it [container-name or container-id] /bin/bash
+
 // bind mount 시키기
 podman run -v /opt:/opt -it --name centPrint01 centos /bin/sh
 
@@ -525,9 +528,59 @@ type ContainerHealthCheckConfig struct {
 - types, uitls 는 tent 에서 가져왔다 refactoring 예정.
 - pod 관련, volume mount 관련
 
-#### 테스트 컨테이너 시나리오
-일단 먼저, 컨테이너들을 수동을 생성한다.
+### tts/pts [참고](https://codedragon.tistory.com/4211)
 
+
+### 참고자료
+프로세스 세션 리더 와 프로세스 그룹 리더  https://blueyikim.tistory.com/89
+
+PROCESS STATE CODES
+Here are the different values that the s, stat and state output
+specifiers (header "STAT" or "S") will display to describe the state of
+a process:
+
+               D    uninterruptible sleep (usually IO)
+               R    running or runnable (on run queue)
+               S    interruptible sleep (waiting for an event to complete)
+               T    stopped by job control signal
+               t    stopped by debugger during the tracing
+               W    paging (not valid since the 2.6.xx kernel)
+               X    dead (should never be seen)
+               Z    defunct ("zombie") process, terminated but not reaped by
+                    its parent
+
+       For BSD formats and when the stat keyword is used, additional
+       characters may be displayed:
+
+               <    high-priority (not nice to other users)
+               N    low-priority (nice to other users)
+               L    has pages locked into memory (for real-time and custom IO)
+               s    is a session leader
+               l    is multi-threaded (using CLONE_THREAD, like NPTL pthreads
+                    do)
+               +    is in the foreground process group
+
+[참고, 그냥 심심할때](https://www.samsungsds.com/kr/insights/docker.html)
+
+### 현재 고민사항
+-컨테이너에서 실행하는 job 의 status 를 확인 하는방법??
+
+- command 나 entrypoint 를 사용하는 것은 Dockerfile 에 정의 되었으므로 후순위로 밀린다.
+- 하지만 위의 내용도 한번은 생각해보자. command 나 entrypoint 를 사용하면 빌드를 해야하는 단점은 있지만 job 의 상태를 container 의 상태와 연동 시킬 수 있음.
+- https://www.alibabacloud.com/blog/kubernetes-batch-jobs_595020 위의 참고 링크 한번 확인하자.
+- 컨테이너를 만들어주고, 실행 파일을 컨테이너에 옮겨주고 이것을 실행할때, process 를 확인해서 상태확인을 할 수 있는 방법이 있는데,
+결국 이 방법도 별도의 프로그램을 만들어줘서 컨테이너가 동작할때 해당 프로그램도 동작을 해야하고 실행파일을 실행될때 해당 실행파일의 process 를 찾고 그 status 를 host 에 넘겨줘야한다.
+- 쿠버네틱스는 어떻게 처리하는지 한번 살펴봐야 한다.
+
+#### 테스트 컨테이너 시나리오
+1. 먼저 실행파일을 넣어서 dockerfile(containerfile) 을 만들고 이 녀석으로 컨테이너로 만든다.
+2. 만들어진 컨테이너를 pod 에 집어 넣는다. (위의 문서 참고하면 run 할때 pod 만들어주고 하는 거 있음.)
+3. 그럼, pod 에서 해당 컨테이너의 상태를 확인 한다. (이건 확인해보자.)
+
+여기까지가 손으로 해볼 수 있는 부분이고 이것이 확인이 되면 이후에는 binding 을 통해서 이것을 자동화 할 수 있는 api 를 뽑아야한다.
+
+1. dockerfile 을 특정 정보를 통해서 만들어주기. https://github.com/seoyhaein/dockerfile-generator
+2. pod 만들어주면서, build.go 에서 해당 dockerfile 에서 컨테이너 실행시키는 api 만들어 주기
 
 
 
