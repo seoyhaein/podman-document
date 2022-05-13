@@ -1,0 +1,32 @@
+// 현재 디렉토리에서 Containerfile 을 빌드해서 이미지 만들어줌
+podman build -t seoy:0.1 .
+
+// 생성된 image 확인
+podman images
+
+// 생성된 이미지를 강제로 삭제함. 그럼 해당 이미지를 사용하고 있는 컨테이너도 사라진다.
+podman rmi -f seoy
+
+// 또는 컨테이너 지우고 이미지 지우기
+podman rm seoy
+podman rmi seoy
+
+// 해당 이미지 실행 -it 옵션 생략, 이미지 뒤에 command 생략
+
+podman run --name seoy localhost/seoy:0.1
+
+// 컨테이너를 구동시키고 pod 에 넣기
+
+podman run -d -it \
+--pod new:tester \
+--name seoy \
+localhost/seoy:0.1 /bin/sh
+
+// 기존에 tester 라는 pod 가 있다면
+podman run -d -it \
+--pod tester \
+--name seoy \
+localhost/seoy:0.1 /bin/sh
+
+// 실행중인 seoy 컨테이너에 bin/bash 를 실행 시킨다.
+podman exec -it seoy /bin/bash
