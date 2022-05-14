@@ -586,5 +586,13 @@ a process:
 /dev/shm  일종의 공유 메모리 https://blog.naver.com/ncloud24/221387977381 https://freewin.tistory.com/234
 
 
-읽어보기
-https://linuxtut.com/en/61f1291f6ee804531328/
+##### 5/15 일 할일 pod 로 연결된 container 들 에서 volume mount 하고
+- 그런데 네임스페이스에 마운트도 있다. 이경우 마운트도 share 되는지 확인해보자.
+- https://docs.podman.io/en/latest/markdown/podman-pod-create.1.html 여기서 mount 관련해서 찾아보자.
+- https://kubernetes.io/ko/docs/tasks/access-application-cluster/communicate-containers-same-pod-shared-volume/
+
+아래 문서 확인.
+반드시 내일 전체 읽어보기
+https://docs.podman.io/en/latest/markdown/podman-pod-create.1.html
+
+To share a volume, use the --volumes-from option when running the target container. You can share volumes even if the source container is not running. By default, Podman mounts the volumes in the same mode (read-write or read-only) as it is mounted in the source container.
