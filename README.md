@@ -596,3 +596,7 @@ a process:
 https://docs.podman.io/en/latest/markdown/podman-pod-create.1.html
 
 To share a volume, use the --volumes-from option when running the target container. You can share volumes even if the source container is not running. By default, Podman mounts the volumes in the same mode (read-write or read-only) as it is mounted in the source container.
+
+
+직접적인 예제 코드는 없고 일단 테스트 코드를 살펴보자 - 3.x 에는 해당 기능이 없다. 최신 버번에서 확인되는데 4.x 를 설치해야하는가???
+https://sourcegraph.com/github.com/containers/podman/-/blob/test/e2e/pod_create_test.go?L14
