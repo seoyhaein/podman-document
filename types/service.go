@@ -6,10 +6,11 @@ import (
 	"log"
 	"strconv"
 
-	nettypes "github.com/containers/podman/v3/libpod/network/types"
-	"github.com/containers/podman/v3/pkg/bindings/containers"
-	"github.com/containers/podman/v3/pkg/bindings/images"
-	"github.com/containers/podman/v3/pkg/specgen"
+	nettypes "github.com/containers/common/libnetwork/types"
+
+	"github.com/containers/podman/v4/pkg/bindings/containers"
+	"github.com/containers/podman/v4/pkg/bindings/images"
+	"github.com/containers/podman/v4/pkg/specgen"
 )
 
 var (
@@ -32,7 +33,7 @@ type Service struct {
 }
 
 // CreateContainer method creates a new container with using a given image pulled by PullImage method.
-// main.go 와 비교해보자.
+// main.go_ 와 비교해보자.
 // containerExistsOptions return 값인 거 같은데 어떻게 사용되는지 디버깅 해보자.
 func (service *Service) CreateContainer(connText *context.Context) (containerID string) {
 	// types.go 참고.

@@ -587,7 +587,7 @@ a process:
 
 
 ##### 5/15 일 할일 pod 로 연결된 container 들 에서 volume mount 하고
-- 그런데 네임스페이스에 마운트도 있다. 이경우 마운트도 share 되는지 확인해보자.
+- 그런데 네임스페이스에 마운트도 있다. 이경우 마운트도 share 되는지 확인해보자. 관련 자료 읽어복 해당 내용 파악하자. 그리고 4.x 설치 부분도 살펴보자.
 - https://docs.podman.io/en/latest/markdown/podman-pod-create.1.html 여기서 mount 관련해서 찾아보자.
 - https://kubernetes.io/ko/docs/tasks/access-application-cluster/communicate-containers-same-pod-shared-volume/
 
