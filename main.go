@@ -27,21 +27,21 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	centos := "docker.io/centos"
+	// Pull Busybox image (Sample 1)
+	fmt.Println("Pulling Busybox image...")
+	_, err = images.Pull(ctx, centos, &images.PullOptions{})
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
-	centos := "cent"
 	// container 를 생성해주는데 여기서 bind mount 관련 설정이 있는 듯하다.
 	// https://sourcegraph.com/github.com/containers/podman/-/blob/pkg/specgenutil/specgenutil_test.go?L16 참고해서 일단 test 를 해보자.
 	// https://sourcegraph.com/search?q=context:global+specgen.NewSpecGenerator&patternType=literal
 	s := specgen.NewSpecGenerator(centos, false)
 	s.Terminal = true
 	r, err := containers.CreateWithSpec(ctx, s, &containers.CreateOptions{})
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	// Pull Busybox image (Sample 1)
-	fmt.Println("Pulling Busybox image...")
-	_, err = images.Pull(ctx, "docker.io/busybox", &images.PullOptions{})
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
