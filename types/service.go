@@ -13,14 +13,6 @@ import (
 	"github.com/containers/podman/v4/pkg/specgen"
 )
 
-var (
-	pTrue = true
-	PTrue = &pTrue
-
-	pFalse = false
-	PFalse = &pFalse
-)
-
 // Service describes the properties and methods for a service like MySQL or Redis. All the available services in tent uses this struct as their type.
 type Service struct {
 	Tag          string
