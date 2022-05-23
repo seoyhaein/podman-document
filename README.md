@@ -161,8 +161,6 @@ podman run -d --restart=always --pod new:myapp_pod \
 4. github.com/containers/podman/v4/libpod -> libpod.Runtime.NewPod
 5. https://github.com/containers/podman/blob/c3d871a3f6cc7a94c5e86782ba63e05cd1d2faeb/pkg/specgen/generate/pod_create.go
 
-#### pod 에서 volume mount 하는 방법 생각해보자.
-
 ## podman binding api 정리
 먼저,  specgen.NewSpecGenerator 함수를 통해서 SpecGenerator 정해준다. 이 SpecGenerator 에 저장된 정보를 통해서 컨테이너를 생성해준다. 
 
@@ -522,12 +520,6 @@ type ContainerHealthCheckConfig struct {
 }
 ```
 
-### Todo
-- 전체적인 싱글머신에서 동작하는 컨테이너 그림 그리기. 병행해서 작업하면서, api 로 뽑아내자.
-- 4.x 와 3.x 코드 비교해서 4.x 코드 중심으로 bindins 관련 학습한다. 소스가 업데이트 됨으로 향후 4.x 가 apt install podman  으로 4.x 도 설치 가능하리라 예상.
-- types, uitls 는 tent 에서 가져왔다 refactoring 예정.
-- pod 관련, volume mount 관련
-
 ### tts/pts [참고](https://codedragon.tistory.com/4211)
 
 
@@ -572,31 +564,3 @@ a process:
 결국 이 방법도 별도의 프로그램을 만들어줘서 컨테이너가 동작할때 해당 프로그램도 동작을 해야하고 실행파일을 실행될때 해당 실행파일의 process 를 찾고 그 status 를 host 에 넘겨줘야한다.
 - 쿠버네틱스는 어떻게 처리하는지 한번 살펴봐야 한다.
 
-#### 테스트 컨테이너 시나리오
-1. 먼저 실행파일을 넣어서 dockerfile(containerfile) 을 만들고 이 녀석으로 컨테이너로 만든다.
-2. 만들어진 컨테이너를 pod 에 집어 넣는다. (위의 문서 참고하면 run 할때 pod 만들어주고 하는 거 있음.)
-3. 그럼, pod 에서 해당 컨테이너의 상태를 확인 한다. (이건 확인해보자.)
-
-여기까지가 손으로 해볼 수 있는 부분이고 이것이 확인이 되면 이후에는 binding 을 통해서 이것을 자동화 할 수 있는 api 를 뽑아야한다.
-
-1. dockerfile 을 특정 정보를 통해서 만들어주기. https://github.com/seoyhaein/dockerfile-generator
-2. pod 만들어주면서, build.go 에서 해당 dockerfile 에서 컨테이너 실행시키는 api 만들어 주기
-
-### https://github.com/containers/podman/issues/8181
-/dev/shm  일종의 공유 메모리 https://blog.naver.com/ncloud24/221387977381 https://freewin.tistory.com/234
-
-
-##### 5/15 일 할일 pod 로 연결된 container 들 에서 volume mount 하고
-- 그런데 네임스페이스에 마운트도 있다. 이경우 마운트도 share 되는지 확인해보자. 관련 자료 읽어복 해당 내용 파악하자. 그리고 4.x 설치 부분도 살펴보자.
-- https://docs.podman.io/en/latest/markdown/podman-pod-create.1.html 여기서 mount 관련해서 찾아보자.
-- https://kubernetes.io/ko/docs/tasks/access-application-cluster/communicate-containers-same-pod-shared-volume/
-
-아래 문서 확인.
-반드시 내일 전체 읽어보기
-https://docs.podman.io/en/latest/markdown/podman-pod-create.1.html
-
-To share a volume, use the --volumes-from option when running the target container. You can share volumes even if the source container is not running. By default, Podman mounts the volumes in the same mode (read-write or read-only) as it is mounted in the source container.
-
-
-직접적인 예제 코드는 없고 일단 테스트 코드를 살펴보자 - 3.x 에는 해당 기능이 없다. 최신 버번에서 확인되는데 4.x 를 설치해야하는가???
-https://sourcegraph.com/github.com/containers/podman/-/blob/test/e2e/pod_create_test.go?L14

@@ -35,3 +35,7 @@ https://github.com/containers/podman/issues/5114
 ### podman 상태
 - podman --remote info
 - https://www.redhat.com/sysadmin/container-information-podman
+
+### etc
+직접적인 예제 코드는 없고 일단 테스트 코드를 살펴보자 - 3.x 에는 해당 기능이 없다. 최신 버번에서 확인되는데 4.x 를 설치해야하는가???
+https://sourcegraph.com/github.com/containers/podman/-/blob/test/e2e/pod_create_test.go?L14

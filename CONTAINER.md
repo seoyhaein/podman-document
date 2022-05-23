@@ -1,3 +1,4 @@
+## podman pod create --share
 ### podman 의 pod 에서 namespaces, ipc, net, pid, user, 그리고 uts 가 shared / isolated 된다는 의미?
 
 [참고 - podman pod create 옵션](https://github.com/containers/podman/blob/main/docs/source/markdown/podman-pod-create.1.md)
