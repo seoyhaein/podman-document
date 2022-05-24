@@ -111,5 +111,16 @@ podman run -it --name=pod-container01 --pod poddata docker.io/library/alpine:lat
 위와 같이 했을 경우는 정상적으로 컨테이너에서 파일이 공유된다. 하지만, 데이터의 업데이트는 되지 않는다. 즉, volume mount 를 한 후에 마운트된 파일이 업데이트 되면 업데이트는 반영이 안된다.
 이것은, issue 인지 아니면 이게 정상 구현 결과인지는 모르겠다.
 
+컨테이너 사이에서도 데이터 share 는 가능하다.
+
+단순히 pod 내에만 있다고 data share 는 가능하지 않는다.
+
+외부 data 컨테이너가 중지하고 있어도 가능하다고 메뉴얼에서는 설명하고 있는데, 이것을 테스트 해야하고, 그리고 volume 만을 만들고 이걸 마운팅하면 어떻게 될까?
+메뉴얼에서는 이러한 기능을 설명하고 있지 않은데..
+
+--volume 에 대한 것을 테스트 해보자. (현실적으로 이게 더 맞을 듯.)
+읽어 보기 : https://docs.podman.io/en/latest/markdown/podman-pod-create.1.html
+           https://docs.oracle.com/en/learn/storage_podman_containers/#for-more-information
+
 ### 참고 링크
 [참고 1, 메뉴얼](https://docs.podman.io/en/latest/markdown/podman-pod-create.1.html)

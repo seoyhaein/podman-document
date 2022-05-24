@@ -554,13 +554,3 @@ a process:
 
 [참고, 그냥 심심할때](https://www.samsungsds.com/kr/insights/docker.html)
 
-### 현재 고민사항
--컨테이너에서 실행하는 job 의 status 를 확인 하는방법??
-
-- command 나 entrypoint 를 사용하는 것은 Dockerfile 에 정의 되었으므로 후순위로 밀린다.
-- 하지만 위의 내용도 한번은 생각해보자. command 나 entrypoint 를 사용하면 빌드를 해야하는 단점은 있지만 job 의 상태를 container 의 상태와 연동 시킬 수 있음.
-- https://www.alibabacloud.com/blog/kubernetes-batch-jobs_595020 위의 참고 링크 한번 확인하자.
-- 컨테이너를 만들어주고, 실행 파일을 컨테이너에 옮겨주고 이것을 실행할때, process 를 확인해서 상태확인을 할 수 있는 방법이 있는데,
-결국 이 방법도 별도의 프로그램을 만들어줘서 컨테이너가 동작할때 해당 프로그램도 동작을 해야하고 실행파일을 실행될때 해당 실행파일의 process 를 찾고 그 status 를 host 에 넘겨줘야한다.
-- 쿠버네틱스는 어떻게 처리하는지 한번 살펴봐야 한다.
-
