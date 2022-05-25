@@ -5,6 +5,9 @@
 
 빌드가 다 되면, 바이러니들을 /usr/local/bin 옮겨놓는다.
 
+폴더에 대한 설명: https://jacking75.github.io/OS_linux_dir_kind/
+https://wookiist.dev/10
+
 바인딩할려면(바인딩도 결국 클라이언트이니까???) 소켓을 활성화 시켜야 한다.(클라이언트 설치)
 아래 링크에서,
 "systemctl --user enable --now podman.socket"

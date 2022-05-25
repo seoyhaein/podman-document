@@ -524,6 +524,8 @@ type ContainerHealthCheckConfig struct {
 
 
 ### 참고자료
+https://eehoeskrap.tistory.com/245
+https://minholee93.tistory.com/entry/Linux-Process-Status-PS
 프로세스 세션 리더 와 프로세스 그룹 리더  https://blueyikim.tistory.com/89
 
 PROCESS STATE CODES
@@ -554,3 +556,25 @@ a process:
 
 [참고, 그냥 심심할때](https://www.samsungsds.com/kr/insights/docker.html)
 
+꼭 읽어보기(정리전)
+https://mkdev.me/posts/the-tool-that-really-runs-your-containers-deep-dive-into-runc-and-oci-specifications
+
+https://chhanz.github.io/container/2020/09/22/podman-build-flask-example-app/
+
+네임스페이스
+https://linuxtut.com/en/61f1291f6ee804531328/
+https://www.44bits.io/ko/keyword/linux-namespace
+
+기초
+https://docs.oracle.com/en/learn/storage_podman_containers/#introduction
+https://phoenixnap.com/kb/podman-tutorial
+
+containerfile
+https://meta.stackoverflow.com/questions/407966/generalize-dockerfile-to-containerfile-for-now-and-the-future
+https://www.mankier.com/5/Containerfile
+
+alpine
+https://blog.naver.com/PostView.nhn?blogId=ki630808&logNo=222149370156
+
+cmd vs entrypoint
+https://bluese05.tistory.com/77
