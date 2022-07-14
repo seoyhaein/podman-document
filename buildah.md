@@ -72,5 +72,10 @@ Hello my debian
 ### api 를 통해서 이미지 구성 중요
 - https://github.com/containers/buildah/blob/main/docs/tutorials/04-include-in-your-build-tool.md
 
-### 기본 메뉴얼은 일단 다 읽자.
+### install
+[설치](https://github.com/containers/buildah/blob/main/install.md)
+
+- podman 과 겹치는 모듈들이 발견이 되었다. runc 같은 경우는 일단 설치가 되어 있는데, 이것은 한번 buildah 설치 시 살펴보도록 하고, 세부적인 설치는 메뉴얼을 좀더 숙달해야 할 것 같다.
+
+
 
