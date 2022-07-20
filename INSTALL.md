@@ -42,3 +42,31 @@ https://github.com/containers/podman/issues/5114
 ### etc
 직접적인 예제 코드는 없고 일단 테스트 코드를 살펴보자 - 3.x 에는 해당 기능이 없다. 최신 버번에서 확인되는데 4.x 를 설치해야하는가???
 https://sourcegraph.com/github.com/containers/podman/-/blob/test/e2e/pod_create_test.go?L14
+
+### 하 정말.. 날려버린 12시간...
+- https://docs.podman.io/en/latest/_static/api.html?version=v4.1
+- podman system service -t 5000 & 
+
+```
+podman system service --help
+Run API service
+
+Description:
+  Run an API service
+
+Enable a listening service for API access to Podman commands.
+
+
+Usage:
+  podman system service [options] [URI]
+
+Examples:
+  podman system service --time=0 unix:///tmp/podman.sock
+  podman system service --time=0 tcp://localhost:8888
+
+Options:
+      --cors string   Set CORS Headers
+  -t, --time uint     Time until the service session expires in seconds.  Use 0 to disable the timeout (default 5)
+
+```
+

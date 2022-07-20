@@ -19,6 +19,7 @@ func main() {
 	if sock_dir == "" {
 		sock_dir = "/var/run"
 	}
+
 	socket := "unix:" + sock_dir + "/podman/podman.sock"
 
 	// Connect to Podman socket
@@ -56,12 +57,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	/*	path, err1 := containers.Mount(ctx, centos, &containers.MountOptions{})
+	path, err1 := containers.Mount(ctx, centos, &containers.MountOptions{})
 
-		if err1 != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		} else {
-			fmt.Println(path)
-		}*/
+	if err1 != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	} else {
+		fmt.Println(path)
+	}
 }
