@@ -68,6 +68,11 @@ podman rm -f $(podman ps -a -q)
 podman container prune
 
 ```
+
+- 모든 이미지 삭제
+```
+ podman image rm -f $(podman image ls -q)
+```
 #### podman pull 또는 이미지를 가져올때 아래와 같은 문제가 발생할때
 - 아래코드는 mariadb 이미지를 가져올때 발생했다.
 - 이에 대한 해결책은 docker.io 를 붙이면 된다. [참고](https://url.kr/cgvhkx)
