@@ -78,4 +78,5 @@ Hello my debian
 - podman 과 겹치는 모듈들이 발견이 되었다. runc 같은 경우는 일단 설치가 되어 있는데, 이것은 한번 buildah 설치 시 살펴보도록 하고, 세부적인 설치는 메뉴얼을 좀더 숙달해야 할 것 같다.
 
 
-
+### buildah 관련 build 및 디버깅 하면서 지저분하게 컨테이너들이 생기고 할때 참고
+https://github.com/containers/podman/issues/7889
